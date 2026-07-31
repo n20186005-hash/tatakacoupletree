@@ -1,0 +1,63 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  imagePath?: string;
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
+}
+
+const {
+  title,
+  description,
+  imagePath = '/images/couple-tree.webp',
+  jsonLd,
+} = Astro.props;
+
+const canonicalURL = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
+const socialImageURL = Astro.site ? new URL(imagePath, Astro.site) : imagePath;
+const sitemapURL = Astro.site ? new URL('/sitemap-index.xml', Astro.site) : undefined;
+---
+
+<!doctype html>
+<html lang="zh-Hant-TW" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#173c32" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <title>{title}</title>
+    {canonicalURL && <link rel="canonical" href={canonicalURL.href} />}
+    {sitemapURL && <link rel="sitemap" href={sitemapURL.href} />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_TW" />
+    <meta property="og:site_name" content="塔塔加夫妻樹旅遊指南" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImageURL.toString()} />
+    {canonicalURL && <meta property="og:url" content={canonicalURL.href} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageURL.toString()} />
+
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){window.dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-HXM22WWPKP', { anonymize_ip: true });
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

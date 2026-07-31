@@ -1,0 +1,613 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+export const prerender = true;
+
+const title = '塔塔加夫妻樹｜高山公路上的守望風景';
+const description = '塔塔加夫妻樹單頁旅遊指南：現況、交通、停車、費用、最佳時段、周邊景點、美食、FAQ、行程收藏與本機紀念卡。';
+const mapURL = 'https://www.google.com/maps/place/Tataka+Couple+Trees/data=!4m7!3m6!1s0x346edf634782b01f:0xc960e63355f4e0f4!8m2!3d23.5125202!4d120.8907209!16s%2Fg%2F1tf6373j';
+const routeURL = 'https://www.google.com/maps/dir/?api=1&destination=23.5125202,120.8907209';
+const siteURL = Astro.site ? new URL('/', Astro.site).href : undefined;
+const imageURL = Astro.site ? new URL('/images/couple-tree.webp', Astro.site).href : undefined;
+const currentYear = new Date().getFullYear();
+
+const navItems = [
+  ['故事', '#story'],
+  ['交通', '#transport'],
+  ['周邊', '#nearby'],
+  ['照片', '#gallery'],
+  ['紀念卡', '#souvenir'],
+  ['FAQ', '#faq'],
+];
+
+const quickFacts = [
+  { label: '位置', value: '台21線約 141.2K', note: '南投縣信義鄉同富村' },
+  { label: '海拔', value: '約 2,478 公尺', note: '早晚溫差明顯' },
+  { label: '費用', value: '免費', note: '路側自然景觀' },
+  { label: '建議停留', value: '約 30 分鐘', note: '搭配塔塔加半日遊' },
+];
+
+const itineraryItems = [
+  {
+    id: 'couple-tree',
+    name: '夫妻樹',
+    type: '公路景觀',
+    desc: '看枯立巨木、山嵐與高山公路光影。',
+    image: '/images/couple-tree.webp',
+  },
+  {
+    id: 'tataka-visitor-center',
+    name: '塔塔加遊客中心',
+    type: '旅遊服務',
+    desc: '補給資訊、休息、用餐並了解高山生態。',
+    image: '/images/tataka-visitor-center.webp',
+  },
+  {
+    id: 'upper-dongpu',
+    name: '上東埔停車場',
+    type: '景觀與轉乘',
+    desc: '設有廁所，可遠眺群山與雲海。',
+    image: '/images/tataka-sunset-clouds.webp',
+  },
+  {
+    id: 'big-hemlock',
+    name: '塔塔加大鐵杉',
+    type: '森林地標',
+    desc: '沿林道與步道感受高山森林尺度。',
+    image: '/images/big-hemlock.webp',
+  },
+];
+
+const gallery = [
+  { src: '/images/couple-tree.webp', alt: '塔塔加夫妻樹現存枯立木', caption: '現存的枯立木與高山公路' },
+  { src: '/images/tataka-sunset-clouds.webp', alt: '塔塔加夕照與雲海', caption: '雲海與夕照，是塔塔加最迷人的片刻' },
+  { src: '/images/big-hemlock.webp', alt: '塔塔加大鐵杉', caption: '高山森林中的大鐵杉' },
+  { src: '/images/forest-giant.webp', alt: '塔塔加森林巨木', caption: '霧氣、樹影與森林尺度' },
+  { src: '/images/visitor-center-exterior.webp', alt: '塔塔加遊客中心外觀', caption: '塔塔加遊客中心' },
+  { src: '/images/visitor-center-interior.webp', alt: '塔塔加遊客中心室內展示', caption: '室內展示與休憩空間' },
+  { src: '/images/visitor-center-dining.webp', alt: '塔塔加遊客中心餐飲空間', caption: '高山地區較便利的餐飲選擇' },
+  { src: '/images/tataka-visitor-center.webp', alt: '塔塔加遊客中心與山林', caption: '把夫妻樹安排進塔塔加半日行程' },
+];
+
+const faqs = [
+  {
+    q: '現在還能看到兩棵夫妻樹嗎？',
+    a: '不能。原本並立的兩株紅檜枯木中，一株已因基部腐朽與豪雨影響倒伏，現場仍保留倒木；目前主要看到的是另一株枯立木。',
+  },
+  {
+    q: '夫妻樹需要門票嗎？',
+    a: '不需要。夫妻樹是高山公路旁的自然景觀，單純停留欣賞不收門票；若延伸前往需要入園或入山許可的登山路線，則應另依規定辦理。',
+  },
+  {
+    q: '可以在路邊停車拍照嗎？',
+    a: '現場有少量停車空間，其中官方資料提到一格無障礙車位。山區道路狹窄，請勿佔用車道、彎道或妨礙通行；車位不足時應改至較大型停車區。',
+  },
+  {
+    q: '什麼時間最適合拍照？',
+    a: '清晨常有較乾淨的光線與山嵐，傍晚則有機會遇到夕照和雲海。高山天候變化快，景色無法保證；夜間道路視線差，不建議為拍照冒險停留。',
+  },
+  {
+    q: '大眾運輸能到夫妻樹嗎？',
+    a: '可查詢行經阿里山、塔塔加與日月潭方向的 6739 路線，再依實際停靠點安排步行或接駁。班次與停靠會調整，出發前務必以客運與官方公告為準。',
+  },
+  {
+    q: '附近有餐廳和廁所嗎？',
+    a: '夫妻樹本身沒有完整服務設施。可前往塔塔加遊客中心周邊使用旅遊服務與餐飲，或到上東埔停車場使用廁所；高山區選擇有限，建議自備飲水與簡單糧食。',
+  },
+];
+
+const attractionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TouristAttraction',
+  name: '塔塔加夫妻樹',
+  alternateName: 'Tataka Couple Trees',
+  description,
+  ...(siteURL ? { url: siteURL } : {}),
+  ...(imageURL ? { image: [imageURL] } : {}),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '台21線約141.2K',
+    addressLocality: '信義鄉',
+    addressRegion: '南投縣',
+    postalCode: '556',
+    addressCountry: 'TW',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 23.5125202,
+    longitude: 120.8907209,
+  },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: '00:00',
+      closes: '23:59',
+    },
+  ],
+  isAccessibleForFree: true,
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: 4.5,
+    bestRating: 5,
+    reviewCount: 26,
+  },
+  publicAccess: true,
+  touristType: ['自駕旅客', '攝影愛好者', '高山景觀旅客'],
+};
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.a,
+    },
+  })),
+};
+---
+
+<BaseLayout title={title} description={description} jsonLd={[attractionJsonLd, faqJsonLd]}>
+  <header class="absolute inset-x-0 top-0 z-40 border-b border-white/10 bg-[#102c25]/30 backdrop-blur-md">
+    <div class="container-shell flex h-18 items-center justify-between">
+      <a href="#top" class="flex items-center gap-3 text-white" aria-label="回到頁首">
+        <span class="grid size-9 place-items-center rounded-full border border-white/30 bg-white/10">
+          <svg viewBox="0 0 24 24" class="size-5" aria-hidden="true">
+            <path fill="currentColor" d="M11.5 2c-1 3.6-.7 6.2-.7 8.8-2.2-1.1-3.7-2.8-4.9-5.1.1 3.8 1.7 6.6 4.5 8.4L9.7 22h4.6l-.7-7.9c2.8-1.8 4.4-4.6 4.5-8.4-1.2 2.3-2.7 4-4.9 5.1 0-2.6.3-5.2-.7-8.8h-1Z" />
+          </svg>
+        </span>
+        <span>
+          <strong class="block font-serif text-lg leading-none tracking-wide">夫妻樹</strong>
+          <small class="mt-1 block text-[10px] tracking-[0.22em] text-white/60">TATAKA · TAIWAN</small>
+        </span>
+      </a>
+
+      <nav class="hidden items-center gap-7 lg:flex" aria-label="主要導覽">
+        {navItems.map(([label, href]) => <a class="nav-link" href={href}>{label}</a>)}
+      </nav>
+
+      <a href={routeURL} target="_blank" rel="noreferrer" class="rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white hover:text-[#173c32]">
+        開始導航
+      </a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="relative min-h-[900px] overflow-hidden bg-[#102c25] text-white lg:min-h-[780px]">
+      <div class="absolute inset-0">
+        <img src="/images/couple-tree.webp" alt="塔塔加夫妻樹現存枯立木" width="600" height="400" fetchpriority="high" class="h-full w-full object-cover object-center opacity-60 lg:object-[center_42%]" />
+        <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,31,26,.96)_0%,rgba(10,31,26,.72)_42%,rgba(10,31,26,.22)_78%),linear-gradient(0deg,rgba(10,31,26,.94)_0%,transparent_45%)]"></div>
+        <div class="absolute inset-0 opacity-25" style="background: radial-gradient(circle at 72% 30%, rgba(215,168,91,.55), transparent 22rem);"></div>
+      </div>
+
+      <div class="container-shell relative z-10 grid min-h-[900px] items-end gap-10 pb-14 pt-36 lg:min-h-[780px] lg:grid-cols-[1.25fr_.75fr] lg:items-center lg:pb-10">
+        <div class="max-w-3xl">
+          <p class="mb-7 flex items-center gap-3 text-xs font-bold tracking-[0.3em] text-[#e2bd79]">
+            <span class="h-px w-10 bg-current"></span>
+            玉山國家公園 · 塔塔加
+          </p>
+          <h1 class="font-serif text-[clamp(4.5rem,13vw,9.5rem)] leading-[.8] tracking-[-.08em]">
+            夫妻<span class="text-[#d8c5a4]">樹</span>
+          </h1>
+          <p class="mt-8 max-w-2xl font-serif text-2xl leading-relaxed text-white/85 md:text-3xl">
+            兩株紅檜曾在風霜裡並肩，<br class="hidden sm:block" />如今，一株站立，一株回到土地。
+          </p>
+          <p class="mt-6 max-w-xl text-base leading-8 text-white/66">
+            海拔約 2,478 公尺的高山公路景觀。這裡不是需要匆忙打卡的地標，而是一段關於時間、火、風雨與陪伴的山林記憶。
+          </p>
+          <div class="mt-9 flex flex-wrap gap-3">
+            <a href="#plan" class="rounded-full bg-[#e9dfca] px-6 py-3.5 text-sm font-black text-[#173c32] transition hover:-translate-y-0.5 hover:bg-white">規劃塔塔加行程</a>
+            <a href={mapURL} target="_blank" rel="noreferrer" class="rounded-full border border-white/30 px-6 py-3.5 text-sm font-black text-white transition hover:bg-white/10">在地圖上查看</a>
+          </div>
+        </div>
+
+        <aside class="rounded-[1.5rem] border border-white/20 bg-[#102c25]/90 p-6 text-white shadow-2xl backdrop-blur-xl lg:justify-self-end lg:p-8">
+          <p class="text-sm font-black tracking-[0.2em] text-[#f0c878]">出發前先知道</p>
+          <div class="mt-6 space-y-5">
+            <div class="flex gap-4 border-b border-white/20 pb-5">
+              <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-[#e2bd79] text-sm font-black text-[#102c25]">01</span>
+              <div><strong class="block text-base leading-7 text-white">現場已非雙樹並立</strong><p class="mt-1 text-sm leading-6 text-white/85">倒伏的樹仍保留原地，請以現況理解這座地標。</p></div>
+            </div>
+            <div class="flex gap-4 border-b border-white/20 pb-5">
+              <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-[#e2bd79] text-sm font-black text-[#102c25]">02</span>
+              <div><strong class="block text-base leading-7 text-white">高山天氣變化快</strong><p class="mt-1 text-sm leading-6 text-white/85">攜帶保暖、防風與雨具，並預留回程日照。</p></div>
+            </div>
+            <div class="flex gap-4">
+              <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-[#e2bd79] text-sm font-black text-[#102c25]">03</span>
+              <div><strong class="block text-base leading-7 text-white">道路安全優先</strong><p class="mt-1 text-sm leading-6 text-white/85">只在合法空間停車，勿站入車道或翻越護欄。</p></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="relative z-20 -mt-8 pb-20">
+      <div class="container-shell grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {quickFacts.map((fact) => (
+          <article class="card-soft p-6">
+            <p class="text-xs font-bold tracking-[0.14em] text-[#7a8c78]">{fact.label}</p>
+            <strong class="mt-3 block font-serif text-2xl text-[#173c32]">{fact.value}</strong>
+            <p class="mt-2 text-sm text-[#66766f]">{fact.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="story" class="py-20 lg:py-28">
+      <div class="container-shell grid items-center gap-12 lg:grid-cols-[.85fr_1.15fr] lg:gap-20">
+        <div class="relative">
+          <div class="overflow-hidden rounded-[2rem] bg-[#173c32] p-3 shadow-2xl shadow-[#173c32]/15">
+            <img src="/images/couple-tree.webp" alt="夫妻樹現存枯立木" width="600" height="400" loading="lazy" class="aspect-[4/5] w-full rounded-[1.4rem] object-cover" />
+          </div>
+          <div class="absolute -bottom-7 -right-2 max-w-[260px] rounded-2xl bg-[#d7a85b] p-5 text-[#173c32] shadow-xl sm:-right-8">
+            <p class="font-serif text-3xl">一立，一臥</p>
+            <p class="mt-2 text-sm leading-6 opacity-80">風景改變了，夫妻樹的故事卻因此更完整。</p>
+          </div>
+        </div>
+        <div>
+          <span class="eyebrow">The story</span>
+          <h2 class="section-title text-[#173c32]">不是消失，<br />而是另一種相守。</h2>
+          <div class="prose-copy mt-8 space-y-5">
+            <p>夫妻樹原是兩株遭森林火災焚燒後留下的臺灣紅檜枯木。枝幹相互呼應、遠看像並肩守望的伴侶，因而成為塔塔加公路上的代表性地標。</p>
+            <p>其中一株後來因基部腐朽，在豪雨後倒伏。管理單位將倒木保留於現地，讓自然分解繼續發生。今日到訪，應把「站立的樹」與「回歸土地的樹」一起視為夫妻樹。</p>
+            <p>這個現況也提醒旅人：高山風景從來不是固定佈景。火災、霧、風、雨和時間，都持續改寫山林。</p>
+          </div>
+          <div class="mt-9 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-2xl border border-[#173c32]/10 bg-white/70 p-5">
+              <p class="text-xs font-bold tracking-widest text-[#82946f]">拍攝重點</p>
+              <p class="mt-2 leading-7 text-[#42544d]">利用道路曲線、遠山層次與枯木輪廓，避免只拍近距離樹幹。</p>
+            </div>
+            <div class="rounded-2xl border border-[#173c32]/10 bg-white/70 p-5">
+              <p class="text-xs font-bold tracking-widest text-[#82946f]">友善提醒</p>
+              <p class="mt-2 leading-7 text-[#42544d]">不攀爬、不刻字、不移動倒木，讓自然演替留在原地。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="plan" class="bg-[#e8eadf] py-20 lg:py-28">
+      <div class="container-shell">
+        <div class="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+          <div>
+            <span class="eyebrow">Plan your stop</span>
+            <h2 class="section-title text-[#173c32]">停留不必久，<br />準備要做足。</h2>
+          </div>
+          <p class="prose-copy max-w-2xl lg:justify-self-end">夫妻樹適合放進塔塔加半日或一日行程。先確認道路與天候，再把停車、保暖、用餐和回程日照一起納入規劃。</p>
+        </div>
+
+        <div class="mt-12 grid gap-5 lg:grid-cols-3">
+          <article class="card-soft p-7">
+            <span class="grid size-11 place-items-center rounded-full bg-[#173c32] font-serif text-lg text-white">$</span>
+            <h3 class="mt-5 font-serif text-2xl text-[#173c32]">門票／費用</h3>
+            <p class="mt-3 leading-7 text-[#586a63]">夫妻樹為公路旁自然景觀，單純停留欣賞免費。本站不販售票券，也沒有預約或付費入場機制。</p>
+            <p class="mt-4 rounded-xl bg-[#f3eee0] p-3 text-sm leading-6 text-[#6c5b43]">延伸至玉山管制登山路線時，需另查入園、入山與接駁規定。</p>
+          </article>
+          <article class="card-soft p-7">
+            <span class="grid size-11 place-items-center rounded-full bg-[#173c32] text-white">P</span>
+            <h3 class="mt-5 font-serif text-2xl text-[#173c32]">停車資訊</h3>
+            <p class="mt-3 leading-7 text-[#586a63]">景點旁只有少量停車空間，官方資料列有一格無障礙車位。滿位時不要冒險路邊排隊，可改往塔塔加停車場或上東埔停車場。</p>
+            <p class="mt-4 text-sm font-bold text-[#2d6a59]">原則：車身完全離開車道、避開彎道、下車先看來車。</p>
+          </article>
+          <article class="card-soft p-7">
+            <span class="grid size-11 place-items-center rounded-full bg-[#173c32] text-white">☀</span>
+            <h3 class="mt-5 font-serif text-2xl text-[#173c32]">最佳遊覽時段／建議停留時長</h3>
+            <p class="mt-3 leading-7 text-[#586a63]">清晨適合山嵐與清透光線，午後至傍晚有機會遇到雲海與夕照。建議停留約 30 分鐘，另為停車與天候預留彈性。</p>
+            <p class="mt-4 text-sm text-[#6b7772]">冬季低溫、濕滑或道路管制時，以安全與官方公告為優先。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="transport" class="py-20 lg:py-28">
+      <div class="container-shell grid gap-12 lg:grid-cols-[.75fr_1.25fr] lg:gap-16">
+        <div>
+          <span class="eyebrow">Getting there</span>
+          <h2 class="section-title text-[#173c32]">詳細交通</h2>
+          <p class="prose-copy mt-6">塔塔加位於高山公路交會區，自駕最有彈性，但每一條路線都應預留天候、落石與臨時管制時間。</p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href={routeURL} target="_blank" rel="noreferrer" class="rounded-full bg-[#173c32] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#205346]">開啟路線導航</a>
+            <a href="#parking" class="rounded-full border border-[#173c32]/25 px-5 py-3 text-sm font-bold text-[#173c32] transition hover:bg-white">查看停車原則</a>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <details open class="card-soft group p-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-serif text-xl text-[#173c32]">
+              從南投、水里方向自駕
+              <span class="text-2xl transition group-open:rotate-45">＋</span>
+            </summary>
+            <p class="mt-4 border-t border-[#173c32]/10 pt-4 leading-7 text-[#5a6c65]">由國道 3 號名間交流道方向接台16線前往水里，再沿台21線經信義、和社往塔塔加。夫妻樹位於台21線約 141.2K。山路彎多，避免依一般平地車程估算抵達時間。</p>
+          </details>
+          <details class="card-soft group p-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-serif text-xl text-[#173c32]">
+              從嘉義、阿里山方向自駕
+              <span class="text-2xl transition group-open:rotate-45">＋</span>
+            </summary>
+            <p class="mt-4 border-t border-[#173c32]/10 pt-4 leading-7 text-[#5a6c65]">由國道 3 號中埔交流道方向銜接台18線，經阿里山往塔塔加，再接近台21線景點路段。連續彎道與高海拔可能造成疲勞，建議在阿里山或塔塔加服務點休息。</p>
+          </details>
+          <details class="card-soft group p-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-serif text-xl text-[#173c32]">
+              大眾運輸
+              <span class="text-2xl transition group-open:rotate-45">＋</span>
+            </summary>
+            <p class="mt-4 border-t border-[#173c32]/10 pt-4 leading-7 text-[#5a6c65]">可查詢 6739 阿里山—日月潭方向路線與塔塔加停靠資訊。山區班次少、時刻與停靠可能調整，本站不寫死班表；請在出發當日再次核對客運業者與玉山國家公園公告。</p>
+          </details>
+          <details id="parking" class="card-soft group p-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-serif text-xl text-[#173c32]">
+              停車與道路安全
+              <span class="text-2xl transition group-open:rotate-45">＋</span>
+            </summary>
+            <div class="mt-4 border-t border-[#173c32]/10 pt-4 text-[#5a6c65]">
+              <ul class="grid gap-3 leading-7">
+                <li>• 夫妻樹旁空間有限，只在明確可停的範圍短暫停靠。</li>
+                <li>• 塔塔加大型車停車場位於臺18線約 108.4K，可由無障礙步道步行約 300 公尺前往塔塔加遊客中心。</li>
+                <li>• 上東埔停車場位於臺18線約 107.7K，可供遊覽車及小客車停靠，並設有公廁。</li>
+                <li>• 即使只拍一張照片，也不要把人或腳架放進行車動線。</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section id="nearby" class="overflow-hidden bg-[#173c32] py-20 text-white lg:py-28">
+      <div class="container-shell">
+        <div class="grid gap-8 lg:grid-cols-[1fr_.75fr] lg:items-end">
+          <div>
+            <span class="eyebrow !text-[#d7a85b]">Around Tataka</span>
+            <h2 class="section-title">周邊景點</h2>
+          </div>
+          <p class="leading-8 text-white/60">收藏按鈕會把想去的點保存在這台裝置的 localStorage，不建立帳號、不上傳，也不會跨裝置同步。</p>
+        </div>
+
+        <div class="mt-12 grid gap-5 md:grid-cols-2">
+          {itineraryItems.map((item, index) => (
+            <article class="overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/6">
+              <div class="grid sm:grid-cols-[190px_1fr]">
+                <img src={item.image} alt={item.name} width="600" height="400" loading="lazy" class="h-full min-h-48 w-full object-cover" />
+                <div class="flex flex-col p-6">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <p class="text-xs font-bold tracking-[0.16em] text-[#d7a85b]">{String(index + 1).padStart(2, '0')} · {item.type}</p>
+                      <h3 class="mt-2 font-serif text-2xl">{item.name}</h3>
+                    </div>
+                    <button type="button" class="itinerary-button grid size-11 shrink-0 place-items-center rounded-full border border-white/25 text-white transition hover:bg-white/10" data-itinerary-id={item.id} data-itinerary-name={item.name} aria-label={`收藏${item.name}`}>
+                      <span class="plus-icon text-2xl leading-none">＋</span>
+                    </button>
+                  </div>
+                  <p class="mt-4 text-sm leading-7 text-white/60">{item.desc}</p>
+                  <p class="mt-auto pt-5 text-xs text-white/40">只儲存在目前裝置</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div class="mt-7 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/10 p-5">
+          <p><strong id="itinerary-count" class="mr-2 text-2xl text-[#e2bd79]">0</strong><span class="text-white/65">個地點已加入行程清單</span></p>
+          <button id="clear-itinerary" type="button" class="rounded-full border border-white/20 px-4 py-2 text-sm font-bold text-white/75 transition hover:bg-white/10 hover:text-white">清除本機清單</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="food" class="py-20 lg:py-28">
+      <div class="container-shell grid gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
+        <div class="grid grid-cols-2 gap-3">
+          <img src="/images/visitor-center-dining.webp" alt="塔塔加遊客中心餐飲空間" width="1000" height="750" loading="lazy" class="col-span-2 aspect-[16/8] w-full rounded-[1.8rem] object-cover" />
+          <img src="/images/visitor-center-interior.webp" alt="塔塔加遊客中心室內" width="1000" height="750" loading="lazy" class="aspect-square w-full rounded-[1.8rem] object-cover" />
+          <img src="/images/tataka-visitor-center.webp" alt="塔塔加遊客中心" width="600" height="400" loading="lazy" class="aspect-square w-full rounded-[1.8rem] object-cover" />
+        </div>
+        <div>
+          <span class="eyebrow">Food & rest</span>
+          <h2 class="section-title text-[#173c32]">周邊美食與補給</h2>
+          <p class="prose-copy mt-7">高海拔地區聚落少，夫妻樹旁沒有餐飲。最實用的做法，是把塔塔加遊客中心周邊視為休息與用餐節點，並在進山前準備飲水和簡單糧食。</p>
+          <div class="mt-8 space-y-4">
+            <article class="rounded-2xl border border-[#173c32]/10 bg-white p-5">
+              <div class="flex items-center justify-between gap-4"><h3 class="font-serif text-xl text-[#173c32]">塔塔加遊客中心餐飲</h3><span class="rounded-full bg-[#e8eadf] px-3 py-1 text-xs font-bold text-[#456357]">最近的完整選擇</span></div>
+              <p class="mt-3 text-sm leading-7 text-[#63726d]">可安排熱食、休息與旅遊資訊。營運內容與供餐時間可能依現場調整，勿把行程壓在最後一刻。</p>
+            </article>
+            <article class="rounded-2xl border border-[#173c32]/10 bg-white p-5">
+              <h3 class="font-serif text-xl text-[#173c32]">阿里山／水里沿線先用餐</h3>
+              <p class="mt-3 text-sm leading-7 text-[#63726d]">若從嘉義或南投進入，可在主要聚落先吃正餐，再攜帶水、堅果、飯糰或易收納點心上山。</p>
+            </article>
+            <article class="rounded-2xl border border-[#173c32]/10 bg-[#f2eee4] p-5">
+              <h3 class="font-serif text-xl text-[#6a5239]">山林飲食原則</h3>
+              <p class="mt-3 text-sm leading-7 text-[#756653]">垃圾全部帶走；不要餵食野生動物；僅在明確允許的區域使用爐具，避免在停車區或林下任意炊煮。</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" class="bg-[#ede9dd] py-20 lg:py-28">
+      <div class="container-shell">
+        <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <span class="eyebrow">Photo journal</span>
+            <h2 class="section-title text-[#173c32]">照片牆</h2>
+          </div>
+          <p class="max-w-xl text-sm leading-7 text-[#64736d]">點擊照片可放大。所有圖片已隨專案本地化，不會在瀏覽時向圖片來源站載入資源。</p>
+        </div>
+
+        <div class="mt-12 grid auto-rows-[250px] gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {gallery.map((item, index) => (
+            <button type="button" class:list={['gallery-tile text-left', index === 0 && 'md:col-span-2 md:row-span-2', index === 1 && 'lg:col-span-2', index === 4 && 'lg:row-span-2']} data-gallery-src={item.src} data-gallery-alt={item.alt} data-gallery-caption={item.caption} aria-label={`放大照片：${item.caption}`}>
+              <img src={item.src} alt={item.alt} width="1000" height="750" loading="lazy" />
+              <span class="gallery-caption">{item.caption}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <dialog id="gallery-lightbox" aria-label="照片放大檢視">
+      <div class="gallery-lightbox-panel">
+        <button id="gallery-close" type="button" aria-label="關閉照片">×</button>
+        <figure class="gallery-lightbox-figure">
+          <div class="gallery-lightbox-media">
+            <img id="gallery-lightbox-image" src="/images/couple-tree.webp" alt="" />
+          </div>
+          <figcaption id="gallery-lightbox-caption"></figcaption>
+        </figure>
+      </div>
+    </dialog>
+
+    <section id="souvenir" class="py-20 lg:py-28">
+      <div class="container-shell">
+        <div class="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+          <div>
+            <span class="eyebrow">Made on your device</span>
+            <h2 class="section-title text-[#173c32]">景點紀念卡</h2>
+          </div>
+          <div class="rounded-2xl border border-[#2d6a59]/15 bg-[#e8eadf] p-5 text-sm leading-7 text-[#456057]">
+            <strong>隱私說明：</strong>照片僅保存在您的設備。選圖、自拍、文字與 Canvas 成品都只在目前瀏覽器處理，不上傳、不經伺服器。
+          </div>
+        </div>
+
+        <div class="mt-10 grid gap-7 lg:grid-cols-[420px_1fr]">
+          <div class="card-soft p-6">
+            <h3 class="font-serif text-2xl text-[#173c32]">1. 選擇照片</h3>
+            <div class="mt-5 grid grid-cols-3 gap-2">
+              <button type="button" data-photo-trigger="gallery" class="rounded-xl border border-[#173c32]/15 bg-white px-3 py-3 text-sm font-bold text-[#173c32] transition hover:bg-[#e8eadf]">從相簿</button>
+              <button type="button" data-photo-trigger="camera" class="rounded-xl border border-[#173c32]/15 bg-white px-3 py-3 text-sm font-bold text-[#173c32] transition hover:bg-[#e8eadf]">拍照</button>
+              <button type="button" data-photo-trigger="selfie" class="rounded-xl border border-[#173c32]/15 bg-white px-3 py-3 text-sm font-bold text-[#173c32] transition hover:bg-[#e8eadf]">自拍</button>
+            </div>
+            <input id="photo-gallery" class="sr-only" type="file" accept="image/*" />
+            <input id="photo-camera" class="sr-only" type="file" accept="image/*" capture="environment" />
+            <input id="photo-selfie" class="sr-only" type="file" accept="image/*" capture="user" />
+
+            <h3 class="mt-8 font-serif text-2xl text-[#173c32]">2. 設定版面</h3>
+            <div class="mt-5 grid gap-4">
+              <div class="form-field">
+                <label for="card-size">尺寸</label>
+                <select id="card-size" class="form-control">
+                  <option value="square">1:1 正方形</option>
+                  <option value="postcard">明信片直式</option>
+                  <option value="story">9:16 限時動態</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="card-style">風格</label>
+                <select id="card-style" class="form-control">
+                  <option value="mist">霧杉 · 柔和留白</option>
+                  <option value="sunset">夕照 · 暖金木色</option>
+                  <option value="night">山夜 · 深綠星光</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="card-title">景點名稱</label>
+                <input id="card-title" class="form-control" value="塔塔加夫妻樹" maxlength="28" />
+              </div>
+              <div class="form-field">
+                <label for="card-date">日期</label>
+                <input id="card-date" class="form-control" type="date" />
+              </div>
+              <div class="form-field">
+                <label for="card-message">短句</label>
+                <input id="card-message" class="form-control" value="一立，一臥；仍在同一座山裡。" maxlength="44" />
+              </div>
+            </div>
+            <div class="mt-6 grid grid-cols-2 gap-3">
+              <button id="render-card" type="button" class="rounded-xl border border-[#173c32]/20 px-4 py-3 text-sm font-bold text-[#173c32] transition hover:bg-[#e8eadf]">更新預覽</button>
+              <button id="download-card" type="button" class="rounded-xl bg-[#173c32] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#205346]">下載紀念卡</button>
+            </div>
+            <p id="card-status" class="mt-4 min-h-5 text-xs leading-5 text-[#687870]" aria-live="polite">尚未選擇照片，先以景點照片製作預覽。</p>
+          </div>
+
+          <div class="rounded-[2rem] bg-[#102c25] p-4 shadow-2xl shadow-[#173c32]/15 sm:p-7">
+            <canvas id="souvenir-canvas" width="1080" height="1080" aria-label="紀念卡預覽"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="bg-[#e8eadf] py-20 lg:py-28">
+      <div class="container-shell grid gap-12 lg:grid-cols-[.7fr_1.3fr]">
+        <div>
+          <span class="eyebrow">FAQ</span>
+          <h2 class="section-title text-[#173c32]">常見問答</h2>
+          <p class="prose-copy mt-6">山區資訊容易受天候與管理措施影響。以下回答以長期有效的原則為主，當日狀況仍以官方公告為準。</p>
+        </div>
+        <div class="space-y-3">
+          {faqs.map((item, index) => (
+            <details class="group rounded-2xl border border-[#173c32]/10 bg-white/80 p-5 sm:p-6" open={index === 0}>
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-5 font-bold leading-7 text-[#173c32]">
+                <span>{item.q}</span><span class="text-xl transition group-open:rotate-45">＋</span>
+              </summary>
+              <p class="mt-4 border-t border-[#173c32]/10 pt-4 leading-8 text-[#61716a]">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20">
+      <div class="container-shell overflow-hidden rounded-[2rem] bg-[#173c32] text-white">
+        <div class="grid lg:grid-cols-[1.05fr_.95fr]">
+          <div class="p-8 sm:p-12 lg:p-16">
+            <p class="text-xs font-bold tracking-[0.22em] text-[#d7a85b]">BEFORE YOU GO</p>
+            <h2 class="mt-5 font-serif text-4xl leading-tight sm:text-5xl">先查路況，再上山。</h2>
+            <p class="mt-5 max-w-xl leading-8 text-white/65">塔塔加的美，來自高海拔與多變天候。出發前請查看玉山國家公園、道路主管機關及客運業者的即時公告。</p>
+            <div class="mt-8 flex flex-wrap gap-3">
+              <a href={routeURL} target="_blank" rel="noreferrer" class="rounded-full bg-[#e9dfca] px-5 py-3 text-sm font-bold text-[#173c32]">導航至夫妻樹</a>
+              <a href="#top" class="rounded-full border border-white/25 px-5 py-3 text-sm font-bold text-white">回到頁首</a>
+            </div>
+          </div>
+          <img src="/images/tataka-sunset-clouds.webp" alt="塔塔加夕照雲海" width="600" height="400" loading="lazy" class="h-full min-h-[320px] w-full object-cover" />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-[#102c25] text-white">
+    <div class="container-shell py-12 lg:py-16">
+      <div class="grid gap-10 border-b border-white/12 pb-10 md:grid-cols-2 lg:grid-cols-[1.4fr_.7fr_.8fr] lg:gap-16">
+        <div class="max-w-md">
+          <a href="#top" class="inline-flex items-center gap-3" aria-label="塔塔加夫妻樹旅遊指南首頁">
+            <span class="grid size-11 place-items-center rounded-full border border-white/20 bg-white/8 text-[#e2bd79]">
+              <svg viewBox="0 0 24 24" class="size-6" aria-hidden="true">
+                <path fill="currentColor" d="M11.5 2c-1 3.6-.7 6.2-.7 8.8-2.2-1.1-3.7-2.8-4.9-5.1.1 3.8 1.7 6.6 4.5 8.4L9.7 22h4.6l-.7-7.9c2.8-1.8 4.4-4.6 4.5-8.4-1.2 2.3-2.7 4-4.9 5.1 0-2.6.3-5.2-.7-8.8h-1Z" />
+              </svg>
+            </span>
+            <span>
+              <strong class="block font-serif text-xl tracking-wide">夫妻樹</strong>
+              <small class="mt-1 block text-[10px] tracking-[0.22em] text-white/55">TATAKA · TAIWAN</small>
+            </span>
+          </a>
+          <p class="mt-5 text-sm leading-7 text-white/65">整理夫妻樹現況、交通與塔塔加周邊行程，陪你更從容地走進高山風景。</p>
+        </div>
+
+        <nav aria-label="頁尾導覽">
+          <h2 class="text-xs font-black tracking-[0.2em] text-[#e2bd79]">網站導覽</h2>
+          <ul class="mt-5 grid grid-cols-2 gap-x-5 gap-y-3 text-sm md:grid-cols-1">
+            {navItems.map(([label, href]) => (
+              <li><a href={href} class="text-white/70 transition hover:text-white">{label}</a></li>
+            ))}
+          </ul>
+        </nav>
+
+        <div>
+          <h2 class="text-xs font-black tracking-[0.2em] text-[#e2bd79]">旅行工具</h2>
+          <div class="mt-5 flex flex-col items-start gap-3 text-sm">
+            <a href={mapURL} target="_blank" rel="noreferrer" class="text-white/70 transition hover:text-white">在地圖上查看 ↗</a>
+            <a href={routeURL} target="_blank" rel="noreferrer" class="text-white/70 transition hover:text-white">導航至夫妻樹 ↗</a>
+            <a href="#top" class="text-white/70 transition hover:text-white">回到頁首 ↑</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3 pt-6 text-xs leading-6 text-white/50 sm:flex-row sm:items-center sm:justify-between">
+        <p>© {currentYear} 塔塔加夫妻樹旅遊指南</p>
+        <p>行程收藏與照片紀念卡僅保存在您的裝置。</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    import '../scripts/site.ts';
+  </script>
+</BaseLayout>
