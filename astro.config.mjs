@@ -4,13 +4,20 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 // 唯一的正式站點 URL 設定處。網域確定後只需填寫下方 site 常數。
-// 留空時仍可正常建置；canonical、Open Graph 絕對 URL 與 sitemap 會自動降級或停用。
-const site = '';
+// 填寫後會啟用 canonical、Open Graph 絕對 URL 與 sitemap。
+const site = 'https://tatakacoupletree.com';
 const configuredSite = site.trim() || undefined;
 
 export default defineConfig({
   site: configuredSite,
   output: 'server',
+  i18n: {
+    defaultLocale: 'zh-Hant',
+    locales: ['zh-Hant', 'en'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   adapter: cloudflare({
     imageService: 'compile',
   }),

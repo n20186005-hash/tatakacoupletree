@@ -1,0 +1,26 @@
+{
+  "name": "塔塔加夫妻樹旅遊指南",
+  "short_name": "夫妻樹",
+  "description": "塔塔加夫妻樹（Tataka Couple Trees）單頁旅遊指南：現況、交通、停車、周邊景點、Google 評價與行程收藏。",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#102c25",
+  "theme_color": "#173c32",
+  "lang": "zh-Hant-TW",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

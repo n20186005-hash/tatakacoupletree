@@ -1,0 +1,715 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Weather from '../components/Weather.astro';
+import { getTranslations, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale?: Locale;
+}
+const { locale = 'zh-Hant' } = Astro.props;
+const t = getTranslations(locale);
+
+const mapURL = 'https://www.google.com/maps/place/Tataka+Couple+Trees/data=!4m7!3m6!1s0x346edf634782b01f:0xc960e63355f4e0f4!8m2!3d23.5125202!4d120.8907209!16s%2Fg%2F1tf6373j';
+const mapsShareURL = 'https://maps.app.goo.gl/fFYGRmgYRTxUwhaA6';
+const routeURL = 'https://www.google.com/maps/dir/?api=1&destination=23.5125202,120.8907209';
+const mapEmbedURL = 'https://maps.google.com/maps?q=23.5125202,120.8907209&z=14&output=embed';
+const govtURL = 'https://www.ysnp.gov.tw/';
+const siteURL = Astro.site ? new URL('/', Astro.site).href : undefined;
+const imageURL = Astro.site ? new URL('/images/couple-tree.webp', Astro.site).href : undefined;
+const currentYear = new Date().getFullYear();
+const ratingCount = '2,987';
+
+const navItems: [string, string][] = [
+  [t.nav.story, '#story'],
+  [t.nav.transport, '#transport'],
+  [t.nav.nearby, '#nearby'],
+  [t.nav.weather, '#weather'],
+  [t.nav.services, '#services'],
+  [t.nav.seasons, '#seasons'],
+  [t.nav.routes, '#routes'],
+  [t.nav.reviews, '#reviews'],
+  [t.nav.gallery, '#gallery'],
+  [t.nav.souvenir, '#souvenir'],
+  [t.nav.learn, '#learn'],
+  [t.nav.sources, '#sources'],
+  [t.nav.faq, '#faq'],
+];
+
+const attractionJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TouristAttraction',
+  '@id': 'https://tatakacoupletree.com/#attraction',
+  name: '塔塔加夫妻樹',
+  alternateName: ['Tataka Couple Trees', '塔塔加夫妻神木', '夫妻樹'],
+  description: t.meta.description,
+  ...(siteURL ? { url: siteURL } : {}),
+  ...(imageURL ? { image: [imageURL] } : {}),
+  isAccessibleForFree: true,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '台21線約141.2K',
+    addressLocality: '信義鄉',
+    addressRegion: '南投縣',
+    postalCode: '556',
+    addressCountry: 'TW',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 23.5125202,
+    longitude: 120.8907209,
+  },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: '00:00',
+      closes: '23:59',
+    },
+  ],
+  hasMap: mapURL,
+  sameAs: [mapsShareURL, govtURL],
+  publicAccess: true,
+  touristType: locale.toLowerCase().startsWith('en')
+    ? ['Road trippers', 'Photographers', 'High-mountain visitors']
+    : ['自駕旅客', '攝影愛好者', '高山景觀旅客'],
+};
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: t.faqs.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.a,
+    },
+  })),
+};
+---
+
+<BaseLayout title={t.meta.title} description={t.meta.description} jsonLd={[attractionJsonLd, faqJsonLd]}>
+  <header class="absolute inset-x-0 top-0 z-40 border-b border-white/10 bg-[#102c25]/30 backdrop-blur-md">
+    <div class="container-shell flex h-18 items-center justify-between">
+      <a href="#top" class="flex items-center gap-3 text-white" aria-label={t.header.homeAria}>
+        <span class="grid size-9 place-items-center rounded-full border border-white/30 bg-white/10">
+          <svg viewBox="0 0 24 24" class="size-5" aria-hidden="true">
+            <path fill="currentColor" d="M11.5 2c-1 3.6-.7 6.2-.7 8.8-2.2-1.1-3.7-2.8-4.9-5.1.1 3.8 1.7 6.6 4.5 8.4L9.7 22h4.6l-.7-7.9c2.8-1.8 4.4-4.6 4.5-8.4-1.2 2.3-2.7 4-4.9 5.1 0-2.6.3-5.2-.7-8.8h-1Z" />
+          </svg>
+        </span>
+        <span>
+          <strong class="block font-serif text-lg leading-none tracking-wide">夫妻樹</strong>
+          <small class="mt-1 block text-[10px] tracking-[0.22em] text-white/60">TATAKA · TAIWAN</small>
+        </span>
+      </a>
+
+      <nav class="hidden items-center gap-7 lg:flex" aria-label="primary">
+        {navItems.map(([label, href]) => <a class="nav-link" href={href}>{label}</a>)}
+      </nav>
+
+      <div class="flex items-center gap-2 text-sm font-bold" aria-label="language">
+        <a href="/" class={locale === 'zh-Hant' ? 'text-[#e2bd79]' : 'text-white/70 transition hover:text-white'}>中文</a>
+        <span class="text-white/30">·</span>
+        <a href="/en/" class={locale === 'en' ? 'text-[#e2bd79]' : 'text-white/70 transition hover:text-white'}>EN</a>
+      </div>
+
+      <a href={routeURL} target="_blank" rel="noreferrer" class="rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white hover:text-[#173c32]">
+        {t.header.startNav}
+      </a>
+    </div>
+  </header>
+
+  <main id="top" data-locale={locale}>
+    <section class="relative min-h-[900px] overflow-hidden bg-[#102c25] text-white lg:min-h-[780px]">
+      <div class="absolute inset-0">
+        <img src="/images/couple-tree.webp" alt="塔塔加夫妻樹現存枯立木" width="600" height="400" class="h-full w-full object-cover object-center opacity-60 lg:object-[center_42%]" />
+        <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,31,26,.96)_0%,rgba(10,31,26,.72)_42%,rgba(10,31,26,.22)_78%),linear-gradient(0deg,rgba(10,31,26,.94)_0%,transparent_45%)]"></div>
+        <div class="absolute inset-0 opacity-25" style="background: radial-gradient(circle at 72% 30%, rgba(215,168,91,.55), transparent 22rem);"></div>
+      </div>
+
+      <div class="container-shell relative z-10 grid min-h-[900px] items-end gap-10 pb-14 pt-36 lg:min-h-[780px] lg:grid-cols-[1.25fr_.75fr] lg:items-center lg:pb-10">
+        <div class="max-w-3xl">
+          <p class="mb-7 flex items-center gap-3 text-xs font-bold tracking-[0.3em] text-[#e2bd79]">
+            <span class="h-px w-10 bg-current"></span>
+            {t.hero.eyebrow}
+          </p>
+          <h1 class="font-serif text-[clamp(4.5rem,13vw,9.5rem)] leading-[.8] tracking-[-.08em]">
+            {t.hero.titleMain}<span class="text-[#d8c5a4]">{t.hero.titleAccent}</span>
+          </h1>
+          <p class="mt-8 max-w-2xl font-serif text-2xl leading-relaxed text-white/85 md:text-3xl">
+            {t.hero.sub[0]}<br class="hidden sm:block" />{t.hero.sub[1]}
+          </p>
+          <p class="mt-6 max-w-xl text-base leading-8 text-white/66">
+            {t.hero.desc}
+          </p>
+          <div class="mt-9 flex flex-wrap gap-3">
+            <a href="#plan" class="rounded-full bg-[#e9dfca] px-6 py-3.5 text-sm font-black text-[#173c32] transition hover:-translate-y-0.5 hover:bg-white">{t.hero.cta1}</a>
+            <a href={mapURL} target="_blank" rel="noreferrer" class="rounded-full border border-white/30 px-6 py-3.5 text-sm font-black text-white transition hover:bg-white/10">{t.hero.cta2}</a>
+          </div>
+        </div>
+
+        <aside class="rounded-[1.5rem] border border-white/20 bg-[#102c25]/90 p-6 text-white shadow-2xl backdrop-blur-xl lg:justify-self-end lg:p-8">
+          <p class="text-sm font-black tracking-[0.2em] text-[#f0c878]">{t.aside.title}</p>
+          <div class="mt-6 space-y-5">
+            {t.aside.items.map((item, i) => (
+              <div class={`flex gap-4 ${i < t.aside.items.length - 1 ? 'border-b border-white/20 pb-5' : ''}`}>
+                <span class="mt-0.5 grid size-10 shrink-0 place-items-center rounded-full bg-[#e2bd79] text-sm font-black text-[#102c25]">{String(i + 1).padStart(2, '0')}</span>
+                <div><strong class="block text-base leading-7 text-white">{item.title}</strong><p class="mt-1 text-sm leading-6 text-white/85">{item.desc}</p></div>
+              </div>
+            ))}
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="relative z-20 -mt-8 pb-20">
+      <div class="container-shell grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {t.quickFacts.map((fact) => (
+          <article class="card-soft p-6">
+            <p class="text-xs font-bold tracking-[0.14em] text-[#7a8c78]">{fact.label}</p>
+            <strong class="mt-3 block font-serif text-2xl text-[#173c32]">{fact.value}</strong>
+            <p class="mt-2 text-sm text-[#66766f]">{fact.note}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="story" class="py-20 lg:py-28">
+      <div class="container-shell grid items-center gap-12 lg:grid-cols-[.85fr_1.15fr] lg:gap-20">
+        <div class="relative">
+          <div class="overflow-hidden rounded-[2rem] bg-[#173c32] p-3 shadow-2xl shadow-[#173c32]/15">
+            <img src="/images/couple-tree.webp" alt="夫妻樹現存枯立木" width="600" height="400" loading="lazy" class="aspect-[4/5] w-full rounded-[1.4rem] object-cover" />
+          </div>
+          <div class="absolute -bottom-7 -right-2 max-w-[260px] rounded-2xl bg-[#d7a85b] p-5 text-[#173c32] shadow-xl sm:-right-8">
+            <p class="font-serif text-3xl">{t.story.badgeTitle}</p>
+            <p class="mt-2 text-sm leading-6 opacity-80">{t.story.badgeDesc}</p>
+          </div>
+        </div>
+        <div>
+          <span class="eyebrow">{t.story.eyebrow}</span>
+          <h2 class="section-title text-[#173c32]">{t.story.titleA}<br />{t.story.titleB}</h2>
+          <nav class="mt-5 flex flex-wrap items-center gap-1.5 text-xs font-bold tracking-wide text-[#7a8c78]" aria-label="breadcrumb">
+            {t.story.breadcrumb.map((b, i) => (
+              <span>{b}{i < t.story.breadcrumb.length - 1 && <span class="mx-1 text-[#b9c4b4]">→</span>}</span>
+            ))}
+          </nav>
+          <div class="prose-copy mt-8 space-y-5">
+            {t.story.paragraphs.map((p) => <p>{p}</p>)}
+          </div>
+          <div class="mt-9 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-2xl border border-[#173c32]/10 bg-white/70 p-5">
+              <p class="text-xs font-bold tracking-widest text-[#82946f]">{t.story.shootTitle}</p>
+              <p class="mt-2 leading-7 text-[#42544d]">{t.story.shootDesc}</p>
+            </div>
+            <div class="rounded-2xl border border-[#173c32]/10 bg-white/70 p-5">
+              <p class="text-xs font-bold tracking-widest text-[#82946f]">{t.story.friendlyTitle}</p>
+              <p class="mt-2 leading-7 text-[#42544d]">{t.story.friendlyDesc}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="plan" class="bg-[#e8eadf] py-20 lg:py-28">
+      <div class="container-shell">
+        <div class="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+          <div>
+            <span class="eyebrow">{t.plan.eyebrow}</span>
+            <h2 class="section-title text-[#173c32]">{t.plan.titleA}<br />{t.plan.titleB}</h2>
+          </div>
+          <p class="prose-copy max-w-2xl lg:justify-self-end">{t.plan.intro}</p>
+        </div>
+
+        <div class="mt-12 grid gap-5 lg:grid-cols-3">
+          {t.plan.cards.map((card) => (
+            <article class="card-soft p-7">
+              <span class="grid size-11 place-items-center rounded-full bg-[#173c32] font-serif text-lg text-white">$</span>
+              <h3 class="mt-5 font-serif text-2xl text-[#173c32]">{card.title}</h3>
+              <p class="mt-3 leading-7 text-[#586a63]">{card.body}</p>
+              <p class="mt-4 rounded-xl bg-[#f3eee0] p-3 text-sm leading-6 text-[#6c5b43]">{card.note}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="transport" class="py-20 lg:py-28">
+      <div class="container-shell grid gap-12 lg:grid-cols-[.75fr_1.25fr] lg:gap-16">
+        <div>
+          <span class="eyebrow">{t.transport.eyebrow}</span>
+          <h2 class="section-title text-[#173c32]">{t.transport.title}</h2>
+          <p class="prose-copy mt-6">{t.transport.intro}</p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href={routeURL} target="_blank" rel="noreferrer" class="rounded-full bg-[#173c32] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#205346]">{t.transport.cta1}</a>
+            <a href="#parking" class="rounded-full border border-[#173c32]/25 px-5 py-3 text-sm font-bold text-[#173c32] transition hover:bg-white">{t.transport.cta2}</a>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          {t.transport.items.map((item, idx) => (
+            <details open={idx === 0} class="card-soft group p-6">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-serif text-xl text-[#173c32]">
+                {item.summary}
+                <span class="text-2xl transition group-open:rotate-45">＋</span>
+              </summary>
+              {idx === t.transport.items.length - 1 ? (
+                <div class="mt-4 border-t border-[#173c32]/10 pt-4 text-[#5a6c65]">
+                  <ul class="grid gap-3 leading-7">
+                    {t.transport.parkingList.map((li) => <li>• {li}</li>)}
+                  </ul>
+                </div>
+              ) : (
+                <p class="mt-4 border-t border-[#173c32]/10 pt-4 leading-7 text-[#5a6c65]">{item.body}</p>
+              )}
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="map" class="bg-[#ede9dd] py-20 lg:py-28">
+      <div class="container-shell">
+        <div class="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+          <div>
+            <span class="eyebrow">{t.map.eyebrow}</span>
+            <h2 class="section-title text-[#173c32]">{t.map.title}</h2>
+          </div>
+          <p class="prose-copy max-w-2xl lg:justify-self-end">{t.map.intro}</p>
+        </div>
+
+        <div class="mt-10 overflow-hidden rounded-[1.6rem] border border-[#173c32]/10 shadow-xl">
+          <iframe
+            src={mapEmbedURL}
+            width="100%"
+            height="450"
+            style="border:0;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            title={t.map.iframeTitle}
+          ></iframe>
+        </div>
+
+        <p class="mt-5 text-sm leading-7 text-[#64736d]">
+          {t.map.govLead}
+          <a href={govtURL} target="_blank" rel="noopener noreferrer" class="font-bold text-[#2d6a59] underline-offset-2 hover:underline">{t.map.govName} ↗</a>
+        </p>
+      </div>
+    </section>
+
+    <Weather locale={locale} />
+
+    <section id="nearby" class="overflow-hidden bg-[#173c32] py-20 text-white lg:py-28">
+      <div class="container-shell">
+        <div class="grid gap-8 lg:grid-cols-[1fr_.75fr] lg:items-end">
+          <div>
+            <span class="eyebrow !text-[#d7a85b]">{t.nearby.eyebrow}</span>
+            <h2 class="section-title">{t.nearby.title}</h2>
+          </div>
+          <p class="leading-8 text-white/60">{t.nearby.intro}</p>
+        </div>
+
+        <div class="mt-12 grid gap-5 md:grid-cols-2">
+          {t.itinerary.map((item, index) => (
+            <article class="overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/6">
+              <div class="grid sm:grid-cols-[190px_1fr]">
+                <img src={item.image} alt={item.name} width="600" height="400" loading="lazy" class="h-full min-h-48 w-full object-cover" />
+                <div class="flex flex-col p-6">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <p class="text-xs font-bold tracking-[0.16em] text-[#d7a85b]">{String(index + 1).padStart(2, '0')} · {item.type}</p>
+                      <h3 class="mt-2 font-serif text-2xl">{item.name}</h3>
+                    </div>
+                    <button type="button" class="itinerary-button grid size-11 shrink-0 place-items-center rounded-full border border-white/25 text-white transition hover:bg-white/10" data-itinerary-id={item.id} data-itinerary-name={item.name} aria-label={item.name}>
+                      <span class="plus-icon text-2xl leading-none">＋</span>
+                    </button>
+                  </div>
+                  <p class="mt-4 text-sm leading-7 text-white/60">{item.desc}</p>
+                  <p class="mt-auto pt-5 text-xs text-white/40">{t.nearby.storedNote}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div class="mt-7 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/10 p-5">
+          <p><strong id="itinerary-count" class="mr-2 text-2xl text-[#e2bd79]">0</strong><span class="text-white/65">{t.nearby.savedCount}</span></p>
+          <button id="clear-itinerary" type="button" class="rounded-full border border-white/20 px-4 py-2 text-sm font-bold text-white/75 transition hover:bg-white/10 hover:text-white">{t.nearby.clearBtn}</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="bg-[#ede9dd] py-20 lg:py-28">
+      <div class="container-shell">
+        <div class="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+          <div>
+            <span class="eyebrow">{t.services.eyebrow}</span>
+            <h2 class="section-title text-[#173c32]">{t.services.title}</h2>
+          </div>
+          <p class="prose-copy max-w-2xl leading-8 text-[#5a6c65] lg:justify-self-end">{t.services.intro}</p>
+        </div>
+
+        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {t.services.items.map((item) => (
+            <article class="rounded-2xl border border-[#173c32]/10 bg-white/80 p-6">
+              <p class="text-xs font-bold tracking-[0.16em] text-[#2d6a59]">{item.title}</p>
+              <p class="mt-3 leading-7 text-[#55665f]">{item.desc}</p>
+            </article>
+          ))}
+        </div>
+
+        <p class="mt-7 rounded-2xl bg-[#173c32]/5 p-5 text-sm leading-7 text-[#5a6c65]">{t.services.note}</p>
+      </div>
+    </section>
+
+    <section id="food" class="py-20 lg:py-28">
+      <div class="container-shell grid gap-12 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
+        <div class="grid grid-cols-2 gap-3">
+          <img src="/images/visitor-center-dining.webp" alt="塔塔加遊客中心餐飲空間" width="1000" height="750" loading="lazy" class="col-span-2 aspect-[16/8] w-full rounded-[1.8rem] object-cover" />
+          <img src="/images/visitor-center-interior.webp" alt="塔塔加遊客中心室內" width="1000" height="750" loading="lazy" class="aspect-square w-full rounded-[1.8rem] object-cover" />
+          <img src="/images/tataka-visitor-center.webp" alt="塔塔加遊客中心" width="600" height="400" loading="lazy" class="aspect-square w-full rounded-[1.8rem] object-cover" />
+        </div>
+        <div>
+          <span class="eyebrow">{t.food.eyebrow}</span>
+          <h2 class="section-title text-[#173c32]">{t.food.title}</h2>
+          <p class="prose-copy mt-7">{t.food.intro}</p>
+          <div class="mt-8 space-y-4">
+            {t.food.articles.map((item, i) => (
+              <article class={`rounded-2xl border border-[#173c32]/10 ${i === 2 ? 'bg-[#f2eee4]' : 'bg-white'} p-5`}>
+                <div class="flex items-center justify-between gap-4">
+                  <h3 class="font-serif text-xl text-[#173c32]">{item.title}</h3>
+                  {i === 0 && <span class="rounded-full bg-[#e8eadf] px-3 py-1 text-xs font-bold text-[#456357]">{t.food.badge}</span>}
+                </div>
+                <p class="mt-3 text-sm leading-7 text-[#63726d]">{item.desc}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" class="bg-[#ede9dd] py-20 lg:py-28">
+      <div class="container-shell">
+        <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <span class="eyebrow">{t.gallery.eyebrow}</span>
+            <h2 class="section-title text-[#173c32]">{t.gallery.title}</h2>
+          </div>
+          <p class="max-w-xl text-sm leading-7 text-[#64736d]">{t.gallery.intro}</p>
+        </div>
+
+        <div class="mt-12 grid auto-rows-[250px] gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {t.galleryItems.map((item, index) => (
+            <button type="button" class:list={['gallery-tile text-left', index === 0 && 'md:col-span-2 md:row-span-2', index === 1 && 'lg:col-span-2', index === 4 && 'lg:row-span-2']} data-gallery-src={item.src} data-gallery-alt={item.alt} data-gallery-caption={item.caption} aria-label={t.gallery.tileAria + item.caption}>
+              <img src={item.src} alt={item.alt} width="1000" height="750" loading="lazy" />
+              <span class="gallery-caption">{item.caption}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <dialog id="gallery-lightbox" aria-label={t.gallery.lightboxLabel}>
+      <div class="gallery-lightbox-panel">
+        <button id="gallery-close" type="button" aria-label={t.gallery.closeLabel}>×</button>
+        <figure class="gallery-lightbox-figure">
+          <div class="gallery-lightbox-media">
+            <img id="gallery-lightbox-image" src="/images/couple-tree.webp" alt="" />
+          </div>
+          <figcaption id="gallery-lightbox-caption"></figcaption>
+        </figure>
+      </div>
+    </dialog>
+
+    <section id="souvenir" class="py-20 lg:py-28">
+      <div class="container-shell">
+        <div class="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+          <div>
+            <span class="eyebrow">{t.souvenir.eyebrow}</span>
+            <h2 class="section-title text-[#173c32]">{t.souvenir.title}</h2>
+          </div>
+          <div class="rounded-2xl border border-[#2d6a59]/15 bg-[#e8eadf] p-5 text-sm leading-7 text-[#456057]">
+            <strong>{t.souvenir.privacy}</strong>
+          </div>
+        </div>
+
+        <div class="mt-10 grid gap-7 lg:grid-cols-[420px_1fr]">
+          <div class="card-soft p-6">
+            <h3 class="font-serif text-2xl text-[#173c32]">{t.souvenir.step1Title}</h3>
+            <div class="mt-5 grid grid-cols-3 gap-2">
+              <button type="button" data-photo-trigger="gallery" class="rounded-xl border border-[#173c32]/15 bg-white px-3 py-3 text-sm font-bold text-[#173c32] transition hover:bg-[#e8eadf]">{t.souvenir.btnGallery}</button>
+              <button type="button" data-photo-trigger="camera" class="rounded-xl border border-[#173c32]/15 bg-white px-3 py-3 text-sm font-bold text-[#173c32] transition hover:bg-[#e8eadf]">{t.souvenir.btnCamera}</button>
+              <button type="button" data-photo-trigger="selfie" class="rounded-xl border border-[#173c32]/15 bg-white px-3 py-3 text-sm font-bold text-[#173c32] transition hover:bg-[#e8eadf]">{t.souvenir.btnSelfie}</button>
+            </div>
+            <input id="photo-gallery" class="sr-only" type="file" accept="image/*" />
+            <input id="photo-camera" class="sr-only" type="file" accept="image/*" capture="environment" />
+            <input id="photo-selfie" class="sr-only" type="file" accept="image/*" capture="user" />
+
+            <h3 class="mt-8 font-serif text-2xl text-[#173c32]">{t.souvenir.step2Title}</h3>
+            <div class="mt-5 grid gap-4">
+              <div class="form-field">
+                <label for="card-size">{t.souvenir.labelSize}</label>
+                <select id="card-size" class="form-control">
+                  {t.souvenir.sizeOptions.map((o) => <option value={o.value}>{o.label}</option>)}
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="card-style">{t.souvenir.labelStyle}</label>
+                <select id="card-style" class="form-control">
+                  {t.souvenir.styleOptions.map((o) => <option value={o.value}>{o.label}</option>)}
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="card-title">{t.souvenir.labelTitle}</label>
+                <input id="card-title" class="form-control" value={t.souvenir.defaultTitle} maxlength="28" />
+              </div>
+              <div class="form-field">
+                <label for="card-date">{t.souvenir.labelDate}</label>
+                <input id="card-date" class="form-control" type="date" />
+              </div>
+              <div class="form-field">
+                <label for="card-message">{t.souvenir.labelMessage}</label>
+                <input id="card-message" class="form-control" value={t.souvenir.defaultMessage} maxlength="44" />
+              </div>
+            </div>
+            <div class="mt-6 grid grid-cols-2 gap-3">
+              <button id="render-card" type="button" class="rounded-xl border border-[#173c32]/20 px-4 py-3 text-sm font-bold text-[#173c32] transition hover:bg-[#e8eadf]">{t.souvenir.btnRender}</button>
+              <button id="download-card" type="button" class="rounded-xl bg-[#173c32] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#205346]">{t.souvenir.btnDownload}</button>
+            </div>
+            <p id="card-status" class="mt-4 min-h-5 text-xs leading-5 text-[#687870]" aria-live="polite">{t.souvenir.statusInitial}</p>
+          </div>
+
+          <div class="rounded-[2rem] bg-[#102c25] p-4 shadow-2xl shadow-[#173c32]/15 sm:p-7">
+            <canvas id="souvenir-canvas" width="1080" height="1080" aria-label="souvenir card preview"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="seasons" class="bg-[#f6f4ec] py-20 lg:py-28">
+      <div class="container-shell">
+        <div class="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+          <div>
+            <span class="eyebrow">{t.seasons.eyebrow}</span>
+            <h2 class="section-title text-[#173c32]">{t.seasons.title}</h2>
+          </div>
+          <p class="prose-copy max-w-2xl leading-8 text-[#5a6c65] lg:justify-self-end">{t.seasons.intro}</p>
+        </div>
+
+        <div class="mt-10 overflow-x-auto rounded-2xl border border-[#173c32]/10">
+          <table class="w-full min-w-[820px] border-collapse text-left text-sm">
+            <thead class="bg-[#173c32] text-white">
+              <tr>
+                {t.seasons.headers.map((h) => <th class="p-4 font-bold">{h}</th>)}
+              </tr>
+            </thead>
+            <tbody class="text-[#55665f]">
+              {t.seasons.rows.map((row, i) => (
+                <tr class={`border-t border-[#173c32]/10 ${i % 2 === 0 ? 'bg-white/70' : 'bg-white/40'}`}>
+                  <td class="p-4 align-top font-bold text-[#173c32]">{row.season}<span class="block text-xs font-normal text-[#7a8c78]">{row.range}</span></td>
+                  <td class="p-4 align-top">{row.climate}</td>
+                  <td class="p-4 align-top">{row.scenery}</td>
+                  <td class="p-4 align-top">{row.gear}</td>
+                  <td class="p-4 align-top">{row.notes}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-10 rounded-2xl border border-[#173c32]/12 bg-[#173c32]/[.04] p-7">
+          <p class="text-xs font-bold tracking-[0.16em] text-[#2d6a59]">{t.seasons.stargazingTitle}</p>
+          <p class="mt-3 leading-8 text-[#586a63]">{t.seasons.stargazingBody}</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="routes" class="bg-[#ede9dd] py-20 lg:py-28">
+      <div class="container-shell">
+        <div class="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+          <div>
+            <span class="eyebrow">{t.routes.eyebrow}</span>
+            <h2 class="section-title text-[#173c32]">{t.routes.title}</h2>
+          </div>
+          <p class="prose-copy max-w-2xl leading-8 text-[#5a6c65] lg:justify-self-end">{t.routes.intro}</p>
+        </div>
+
+        <h3 class="section-title mt-14 !text-2xl text-[#173c32]">{t.routes.byGroupTitle}</h3>
+        <div class="mt-7 grid gap-5 lg:grid-cols-3">
+          {t.routes.groups.map((g) => (
+            <article class="card-soft p-7">
+              <p class="text-xs font-bold tracking-[0.16em] text-[#2d6a59]">{g.tag}</p>
+              <p class="mt-3 leading-7 text-[#586a63]"><span class="font-bold text-[#173c32]">{t.routes.rhythmLabel}：</span>{g.rhythm}</p>
+              <p class="mt-2 leading-7 text-[#586a63]"><span class="font-bold text-[#173c32]">{t.routes.routeLabel}：</span>{g.route}</p>
+              <p class="mt-2 text-sm text-[#6b7772]">{g.tip}</p>
+            </article>
+          ))}
+        </div>
+
+        <h3 class="section-title mt-14 !text-2xl text-[#173c32]">{t.routes.generalTitle}</h3>
+        <div class="mt-7 grid gap-5 lg:grid-cols-2">
+          {t.routes.general.map((g) => (
+            <article class="rounded-2xl border border-[#173c32]/10 bg-white/80 p-7">
+              <p class="font-serif text-2xl text-[#173c32]">{g.title}</p>
+              <p class="mt-1 text-sm font-bold text-[#2d6a59]">{g.duration}</p>
+              <p class="mt-4 leading-7 text-[#586a63]">{g.body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="learn" class="bg-[#173c32] py-20 text-white lg:py-28">
+      <div class="container-shell">
+        <div class="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+          <div>
+            <span class="eyebrow !text-[#d7a85b]">{t.learn.eyebrow}</span>
+            <h2 class="section-title">{t.learn.title}</h2>
+          </div>
+          <p class="prose-copy max-w-2xl leading-8 text-white/60 lg:justify-self-end">{t.learn.intro}</p>
+        </div>
+
+        <div class="mt-12 grid gap-10 lg:grid-cols-2">
+          {t.learn.cards.map((c) => (
+            <div>
+              <h3 class="font-serif text-2xl text-[#e2bd79]">{c.title}</h3>
+              <p class="mt-4 leading-8 text-white/75">{c.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="bg-[#e8eadf] py-20 lg:py-28">
+      <div class="container-shell grid gap-12 lg:grid-cols-[.7fr_1.3fr]">
+        <div>
+          <span class="eyebrow">{t.nav.faq}</span>
+          <h2 class="section-title text-[#173c32]">{t.faqTitle}</h2>
+          <p class="prose-copy mt-6">{t.faqIntro}</p>
+        </div>
+        <div class="space-y-3">
+          {t.faqs.map((item, index) => (
+            <details class="group rounded-2xl border border-[#173c32]/10 bg-white/80 p-5 sm:p-6" open={index === 0}>
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-5 font-bold leading-7 text-[#173c32]">
+                <span>{item.q}</span><span class="text-xl transition group-open:rotate-45">＋</span>
+              </summary>
+              <p class="mt-4 border-t border-[#173c32]/10 pt-4 leading-8 text-[#61716a]">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="reviews" class="py-20 lg:py-28">
+      <div class="container-shell grid gap-10 lg:grid-cols-[1fr_.9fr] lg:items-center">
+        <div>
+          <span class="eyebrow">{t.reviews.eyebrow}</span>
+          <h2 class="section-title text-[#173c32]">{t.reviews.title}</h2>
+          <div class="mt-6 flex items-end gap-5">
+            <span class="font-serif text-6xl leading-none text-[#173c32]">4.3</span>
+            <div class="pb-1">
+              <div class="relative inline-block text-2xl leading-none" aria-hidden="true">
+                <span class="text-[#d8d2c2]">★★★★★</span>
+                <span class="absolute left-0 top-0 overflow-hidden whitespace-nowrap text-[#d7a85b]" style="width:86%">★★★★★</span>
+              </div>
+              <p class="mt-2 text-sm text-[#5a6c65]">{ratingCount} {t.reviews.ratingCount}</p>
+            </div>
+          </div>
+          <p class="mt-6 max-w-xl text-sm leading-7 text-[#64736d]">
+            {t.reviews.text}
+            <a href={mapsShareURL} target="_blank" rel="noreferrer" class="font-bold text-[#2d6a59] underline-offset-2 hover:underline">{t.sources.items[0].linkText} ↗</a>
+          </p>
+        </div>
+        <aside class="rounded-[1.6rem] border border-[#173c32]/12 bg-[#e8eadf] p-7">
+          <p class="text-xs font-bold tracking-[0.16em] text-[#2d6a59]">{t.reviews.sourceTitle}</p>
+          <p class="mt-3 leading-7 text-[#55665f]">{t.reviews.sourceDesc}</p>
+          <a href={mapsShareURL} target="_blank" rel="noreferrer" class="mt-5 inline-flex items-center gap-2 rounded-full bg-[#173c32] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#205346]">
+            {t.reviews.sourceBtn} ↗
+          </a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="sources" class="bg-[#e8eadf] py-16 lg:py-20">
+      <div class="container-shell">
+        <span class="eyebrow">{t.sources.eyebrow}</span>
+        <h2 class="section-title text-[#173c32]">{t.sources.title}</h2>
+        <div class="mt-8 grid gap-4 md:grid-cols-2">
+          {t.sources.items.map((item) => (
+            <article class="rounded-2xl border border-[#173c32]/10 bg-white/80 p-6">
+              <h3 class="font-serif text-xl text-[#173c32]">{item.title}</h3>
+              {item.sub && <p class="mt-2 text-sm font-bold text-[#2d6a59]">{item.sub}</p>}
+              <p class="mt-3 text-sm leading-7 text-[#63726d]">{item.desc}</p>
+              <a href={item.title === t.sources.items[0].title ? mapsShareURL : govtURL} target="_blank" rel="noreferrer" class="mt-4 inline-block text-sm font-bold text-[#2d6a59] underline-offset-2 hover:underline">{item.linkText} ↗</a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20">
+      <div class="container-shell overflow-hidden rounded-[2rem] bg-[#173c32] text-white">
+        <div class="grid lg:grid-cols-[1.05fr_.95fr]">
+          <div class="p-8 sm:p-12 lg:p-16">
+            <p class="text-xs font-bold tracking-[0.22em] text-[#d7a85b]">{t.cta.eyebrow}</p>
+            <h2 class="mt-5 font-serif text-4xl leading-tight sm:text-5xl">{t.cta.title}</h2>
+            <p class="mt-5 max-w-xl leading-8 text-white/65">{t.cta.desc}</p>
+            <div class="mt-8 flex flex-wrap gap-3">
+              <a href={routeURL} target="_blank" rel="noreferrer" class="rounded-full bg-[#e9dfca] px-5 py-3 text-sm font-bold text-[#173c32]">{t.cta.cta1}</a>
+              <a href="#top" class="rounded-full border border-white/25 px-5 py-3 text-sm font-bold text-white">{t.cta.cta2}</a>
+            </div>
+          </div>
+          <img src="/images/tataka-sunset-clouds.webp" alt="塔塔加夕照雲海" width="600" height="400" loading="lazy" class="h-full min-h-[320px] w-full object-cover" />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-[#102c25] text-white">
+    <div class="container-shell py-12 lg:py-16">
+      <div class="grid gap-10 border-b border-white/12 pb-10 md:grid-cols-2 lg:grid-cols-[1.4fr_.7fr_.8fr] lg:gap-16">
+        <div class="max-w-md">
+          <a href="#top" class="inline-flex items-center gap-3" aria-label={t.header.homeAria}>
+            <span class="grid size-11 place-items-center rounded-full border border-white/20 bg-white/8 text-[#e2bd79]">
+              <svg viewBox="0 0 24 24" class="size-6" aria-hidden="true">
+                <path fill="currentColor" d="M11.5 2c-1 3.6-.7 6.2-.7 8.8-2.2-1.1-3.7-2.8-4.9-5.1.1 3.8 1.7 6.6 4.5 8.4L9.7 22h4.6l-.7-7.9c2.8-1.8 4.4-4.6 4.5-8.4-1.2 2.3-2.7 4-4.9 5.1 0-2.6.3-5.2-.7-8.8h-1Z" />
+              </svg>
+            </span>
+            <span>
+              <strong class="block font-serif text-xl tracking-wide">夫妻樹</strong>
+              <small class="mt-1 block text-[10px] tracking-[0.22em] text-white/55">TATAKA · TAIWAN</small>
+            </span>
+          </a>
+          <p class="mt-5 text-sm leading-7 text-white/65">{t.footer.brandDesc}</p>
+        </div>
+
+        <nav aria-label="footer">
+          <h2 class="text-xs font-black tracking-[0.2em] text-[#e2bd79]">{t.footer.navTitle}</h2>
+          <ul class="mt-5 grid grid-cols-2 gap-x-5 gap-y-3 text-sm md:grid-cols-1">
+            {navItems.map(([label, href]) => (
+              <li><a href={href} class="text-white/70 transition hover:text-white">{label}</a></li>
+            ))}
+          </ul>
+        </nav>
+
+        <div>
+          <h2 class="text-xs font-black tracking-[0.2em] text-[#e2bd79]">{t.footer.toolsTitle}</h2>
+          <div class="mt-5 flex flex-col items-start gap-3 text-sm">
+            <a href={mapURL} target="_blank" rel="noreferrer" class="text-white/70 transition hover:text-white">{t.footer.mapLink} ↗</a>
+            <a href={routeURL} target="_blank" rel="noreferrer" class="text-white/70 transition hover:text-white">{t.footer.routeLink} ↗</a>
+            <a href="#top" class="text-white/70 transition hover:text-white">{t.footer.topLink} ↑</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3 pt-6 text-xs leading-6 text-white/50 sm:flex-row sm:items-center sm:justify-between">
+        <p>© {currentYear} {t.footer.copyright}</p>
+        <p>{t.footer.deviceNote}</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    import '../scripts/site.ts';
+  </script>
+</BaseLayout>

@@ -21,7 +21,7 @@ const sitemapURL = Astro.site ? new URL('/sitemap-index.xml', Astro.site) : unde
 ---
 
 <!doctype html>
-<html lang="zh-Hant-TW" class="scroll-smooth">
+<html lang={Astro.currentLocale === 'en' ? 'en' : 'zh-Hant-TW'} class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -30,15 +30,29 @@ const sitemapURL = Astro.site ? new URL('/sitemap-index.xml', Astro.site) : unde
     <meta name="robots" content="index,follow,max-image-preview:large" />
     <title>{title}</title>
     {canonicalURL && <link rel="canonical" href={canonicalURL.href} />}
+    {Astro.site && (
+      <>
+        <link rel="alternate" hreflang="zh-Hant" href={new URL('/', Astro.site).href} />
+        <link rel="alternate" hreflang="en" href={new URL('/en/', Astro.site).href} />
+        <link rel="alternate" hreflang="x-default" href={new URL('/', Astro.site).href} />
+      </>
+    )}
     {sitemapURL && <link rel="sitemap" href={sitemapURL.href} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="zh_TW" />
+    <meta property="og:locale" content={Astro.currentLocale === 'en' ? 'en_US' : 'zh_TW'} />
+    <meta property="og:locale:alternate" content={Astro.currentLocale === 'en' ? 'zh_TW' : 'en_US'} />
     <meta property="og:site_name" content="塔塔加夫妻樹旅遊指南" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={socialImageURL.toString()} />
+    <meta property="og:image:alt" content={`${title} - 塔塔加夫妻樹`} />
+    <meta property="og:image:type" content="image/webp" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="800" />
     {canonicalURL && <meta property="og:url" content={canonicalURL.href} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
@@ -54,10 +68,28 @@ const sitemapURL = Astro.site ? new URL('/sitemap-index.xml', Astro.site) : unde
       window.dataLayer = window.dataLayer || [];
       function gtag(){window.dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-HXM22WWPKP', { anonymize_ip: true });
+      const GA4_ID = 'G-HXM22WWPKP';
+      // Explicit page_location / page_path so each locale (/ vs /en/) is
+      // attributed separately in GA4; content_group1 segments by language.
+      const isEnglish = document.documentElement.lang && document.documentElement.lang.toLowerCase().startsWith('en');
+      gtag('config', GA4_ID, {
+        anonymize_ip: true,
+        page_location: location.href,
+        page_path: location.pathname,
+        page_title: document.title,
+        content_group1: isEnglish ? 'English' : 'Chinese',
+      });
     </script>
   </head>
   <body>
     <slot />
+
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>
